@@ -1,0 +1,3 @@
+[submodule "javascript/resumable.js"]
+	path = javascript/resumable.js
+	url = git@github.com:vidalon/resumable.js.git
