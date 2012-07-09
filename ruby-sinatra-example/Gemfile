@@ -1,0 +1,7 @@
+source :rubygems
+
+gem 'sinatra', require: 'sinatra/base'
+gem 'ooyala-api', 
+  require: 'ooyala',
+  git: 'git@github.com:ooyala/ruby-sdk.git'
+gem 'thin'
