@@ -143,7 +143,7 @@ Ooyala.Client.Uploader.prototype = {
     this.eventHandlers[eventName].push({handler: eventHandler, context: context});
   },
 
-  _progressHandler: function:(){
+  _progressHandler: function(){
     this._fireEvent(this.eventNames.PROGRESS);
   },
 
@@ -177,7 +177,7 @@ Ooyala.Client.Uploader.prototype = {
   _asyncOperationCompleted: function(){
     this.__asyncOperationsControl.pop();
     this._completeHandler();
-  }
+  },
 
   _completeHandler: function(){
     //Wait until all asynchronous operations have been completed
