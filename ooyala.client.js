@@ -1,17 +1,29 @@
 /**
- * Bootstrap the Ooyala namespace and provide the implenentation for the Object.create function 
- * by Douglas Crockford to browsers that do not implement ECMAScript 5
+ * Bootstrap the Ooyala.Client namespace and provide the implementation for the Object.create and 
+ * Object.defineProperties functions to browsers that do not implement ECMAScript 5
  * */
+
 if(!window.Ooyala){
   window.Ooyala = {};
 }
 
 Ooyala.Client = {} || Ooyala.Client;
 
-if (typeof Object.create !== 'function') {
-  Object.create = function (o) {
-    function F() {}
-    F.prototype = o;
+if(typeof Object.defineProperties !== 'function'){
+  Object.defineProperties = function(obj, properties){
+    for(var key in properties){
+      obj[key] = properties[key];
+    }
+  };
+}
+
+if(typeof Object.create !== 'function'){
+  Object.create = function(proto, propertiesObj){
+    function F(){};
+    F.prototype = proto;
+    if(typeof propertiesObj !== 'undefined'){
+      Object.defineProperties(F, propertiesObj);
+    }
     return new F();
   };
 }
