@@ -1,20 +1,29 @@
 /**
 * Base class for Uploaders
 * */
-Ooyala.Client.Uploader = function(){
-  var that = Object.create(new Ooyala.Client.EventDispatcher())
-
-  that.getFile = function(){
-    return null;
+(function(){
+  Ooyala.Client.Uploader = function(){
+    this.chunk_size = 4194304;
+    this.file = null;
+    this.uploadingURLs = [];
+    this.browseButton = null;
   };
 
-  that.upload = function(){
-    throw new Error("This method should be implemented by a child object");
-  };
+  $.extend(Ooyala.Client.Uploader.prototype, new Ooyala.Client.EventDispatcher(), {
+    setUploadingURLs: function(urls){
+      this.uploadingURLs = urls;
+    },
 
-  that.progress = function(){
-    return 0;
-  };
+    upload: function(){
+      throw new Error("This method should be implemented by a child object");
+    },
 
-  return that;
-};
+    progress: function(){
+      return 0;
+    },
+
+    assignBrowse: function(browseButton){
+      this.browseButton = browseButton;
+    }
+  });
+}).call(this);
