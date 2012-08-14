@@ -2,8 +2,11 @@
   <head>
     <title>HTML5 Ooyala Uploader</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="javascripts/resumable.js"></script>
-    <script type="text/javascript" src="javascripts/OoyalaUploader.js"></script>
+    <script type="text/javascript" src="javascripts/ooyala.client.js"></script>
+    <script type="text/javascript" src="javascripts/eventdispatcher.js"></script>
+    <script type="text/javascript" src="javascripts/assetcreator.js"></script>
+    <script type="text/javascript" src="javascripts/uploader.js"></script>
+    <script type="text/javascript" src="javascripts/htmluploader.js"></script>
   </head>
   <body>
     <div>
@@ -22,7 +25,7 @@
     </div>
     <div id="progress"></div>
     <script type="text/javascript">
-      window.uploader = new Ooyala.Client.Uploader('api_proxy', 'selectAsset');
+      window.uploader = new Ooyala.Client.AssetCreator('api_proxy', 'selectAsset');
 
       uploader.on("progress", function(){
         $("#progress").text(uploader.progress());
