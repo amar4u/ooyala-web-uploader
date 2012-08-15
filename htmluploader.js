@@ -14,6 +14,7 @@
 
 
   var UploadableChunk = function(url, chunkProvider, maxNumberOfRetries){
+    Ooyala.Client.EventDispatcher.call(this);
     this.url = url;
     this.chunkProvider = chunkProvider;
     this.maxNumberOfRetries = maxNumberOfRetries;
@@ -107,6 +108,7 @@
    * to Flash file slicing and doing a chunked upload via HTTP.
    * */
   var HTMLUploader = Ooyala.Client.HTMLUploader = function(browseButton, options){
+    Ooyala.Client.Uploader.call(this);
     this.chunksUploaded = 0;
     this.chunkProvider = null;
     this.totalChunks = this.uploadingURLs.lenght;
@@ -130,7 +132,7 @@
     }
   };
 
-  $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader(), {
+  $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader, {
     /**
      * Start uploading the selected file.
      * */

@@ -8,6 +8,7 @@
   Ooyala.Client.Events.ASSET_CREATION_COMPLETE = "assetCreationComplete";
 
   Ooyala.Client.AssetCreator = function(apiProxy, browseButton, dropArea, options){
+    Ooyala.Client.EventDispatcher.call(this);
     if(typeof(jQuery) == "undefined"){
       throw new Error("This uploader needs jQuery 1.5+ to be loaded.");
     }

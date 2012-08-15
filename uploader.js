@@ -3,6 +3,7 @@
 * */
 (function(){
   Ooyala.Client.Uploader = function(){
+    Ooyala.Client.EventDispatcher.call(this);
     this.chunk_size = 4194304;
     this.file = null;
     this.uploadingURLs = [];
