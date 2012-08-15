@@ -9,25 +9,32 @@ if($parameters == null){
   $parameters = array();
 }
 $body = json_decode($_POST["body"]);
+
 $path = $_POST["path"];
 
-switch($method){
-  case "GET": 
-    echo json_encode($api->get($path, $parameters));
-    break;
-  case "POST": 
-    echo json_encode($api->post($path, $body, $parameters));
-    break;
-  case "PUT": 
-    echo json_encode($api->put($path, $body, $parameters));
-    break;
-  case "PACTH": 
-    echo json_encode($api->patch($path, $body ,$parameters));
-    break;
-  case "DELETE": 
-    echo json_encode($api->delete($path));
-    break;
-  default:
-    echo "";
+try{
+  switch($method){
+    case "GET": 
+      echo json_encode($api->get($path, $parameters));
+      break;
+    case "POST": 
+      echo json_encode($api->post($path, $body, $parameters));
+      break;
+    case "PUT": 
+      echo json_encode($api->put($path, $body, $parameters));
+      break;
+    case "PACTH": 
+      echo json_encode($api->patch($path, $body ,$parameters));
+      break;
+    case "DELETE": 
+      echo json_encode($api->delete($path));
+      break;
+    default:
+      echo "";
+  }
+}
+catch(Exception $e){
+  header("Status: 500 Internal Server Error");
+  echo $e->getMessage();
 }
 ?>
