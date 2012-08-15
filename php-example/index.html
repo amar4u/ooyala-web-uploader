@@ -40,7 +40,7 @@
       });
 
       function upload(){
-        uploader.createAsset($("#assetName").val(), $("#assetDescription").val(), $("#assetLabels").val(), $("#assetMetadata").val());
+        uploader.createAsset($("#assetName").val(), $("#assetDescription").val(), [$("#assetLabels").val()], $("#assetMetadata").val());
       }
     </script>
     </body>
