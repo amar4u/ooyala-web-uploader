@@ -45,11 +45,10 @@
       var that = this;
 
       var onComplete = function(){
-        that.chunkProvider.detach("complete", onComplete);
         var bytes = that.chunkProvider.data;
 
         var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", function(){console.log("Finished uploading for " + that.url);that.dispatchEvent("complete");});
+        xhr.addEventListener("load", function(){that.dispatchEvent("complete");});
         xhr.addEventListener("error", function(e){that.upload(e);}); //Retry
 
         xhr.open("POST", that.url);
