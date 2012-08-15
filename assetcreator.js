@@ -122,7 +122,7 @@
 
       context = context || this;
 
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/labels", function(){
+      this._makeAPICall("PUT", "assets/" + this.embedCode + "/labels", null, labels, function(){
         completionCallback.call(context);
       });
     },
