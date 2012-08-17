@@ -1,1 +1,1 @@
-/Users/vidal/Code/ooyala-web-uploader/assetcreator.js
+../../assetcreator.js
