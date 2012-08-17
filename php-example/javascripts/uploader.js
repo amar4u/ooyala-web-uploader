@@ -1,1 +1,1 @@
-/Users/vidal/Code/ooyala-web-uploader/uploader.js
+../../uploader.js
