@@ -23,7 +23,7 @@ try{
     case "PUT": 
       echo json_encode($api->put($path, $body, $parameters));
       break;
-    case "PACTH": 
+    case "PATCH":
       echo json_encode($api->patch($path, $body ,$parameters));
       break;
     case "DELETE": 
