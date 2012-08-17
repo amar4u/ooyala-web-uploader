@@ -1,4 +1,4 @@
-(function(){
+(function($){
   Ooyala.Client.HTML5ChunkProvider = function(file){
     Ooyala.Client.EventDispatcher.call(this);
     this.file = file;
@@ -17,4 +17,4 @@
       this.dispatchEvent("complete");
     }
   });
-}).call(this);
+}).call(this, jQuery);

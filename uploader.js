@@ -1,7 +1,7 @@
 /**
 * Base class for Uploaders
 * */
-(function(){
+(function($){
   Ooyala.Client.Uploader = function(){
     Ooyala.Client.EventDispatcher.call(this);
     this.chunk_size = 4194304;
@@ -27,4 +27,4 @@
       this.browseButton = browseButton;
     }
   });
-}).call(this);
+}).call(this, jQuery);

@@ -1,4 +1,4 @@
-(function(){
+(function($){
   
   Ooyala.Client.Events = {};
 
@@ -219,4 +219,4 @@
       });
     }
   });
-}).call(this);
+}).call(this, jQuery);

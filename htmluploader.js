@@ -1,4 +1,4 @@
-(function(){
+(function($){
 
   /**
    * Pieces of code taken from resumable.js at https://github.com/23/resumable.js
@@ -187,4 +187,4 @@
       return this.chunksUploaded == 0 ? 0 : (this.chunksUploaded / this.totalChunks);
     }
   });
-}).call(this);
+}).call(this, jQuery);

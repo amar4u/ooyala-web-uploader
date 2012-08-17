@@ -2,7 +2,7 @@
 * Base class to all Objects that will support the "on('event', callback)" pattern for event listening
 * */
 
-(function(){
+(function($){
   Ooyala.Client.EventDispatcher = function(){
     this.eventHandlers = {};
   };
@@ -56,4 +56,4 @@
       }
     }
   });
-}).call(this);
+}).call(this, jQuery);
