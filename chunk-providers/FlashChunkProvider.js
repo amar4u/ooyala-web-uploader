@@ -1,15 +1,5 @@
-/**
-* This object provides an interface to obtain the chunks of a file to be uploaded 
-* by using Flash to browse for the file and provide the slicing mechanism to get the chunks.
-* */
-
-if(!window.Ooyala){
-  window.Ooyala = {};
-}
-
-Ooyala.Client = {} || Ooyala.Client;
-
-Ooyala.Client.ChunkProvider = function(browseButton, options){
+Ooyala.Client.FlashChunkProvider = function(browseButton, options){
+  Ooyala.Client.EventDispatcher.call(this);
   options = options || {}
   if(typeof(browseButton) == "string"){
     browseButton = document.getElementById(browseButton);
@@ -26,7 +16,7 @@ Ooyala.Client.ChunkProvider = function(browseButton, options){
   this.options = $.extend(options, this.defaults);
 };
 
-Ooyala.Client.ChunkProvider.prototype = {
+$.extend(Ooyala.Client.FlashChunkProvider.prototype, new Ooyala.Client.EventDispatcher, {
   _init: function(){
     var that = this;
     if(window.swfobject){
@@ -63,4 +53,4 @@ Ooyala.Client.ChunkProvider.prototype = {
     // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
     swfobject.createCSS("#" + this.browseButton.id, "display:block;text-align:left;");
   }
-};
+});

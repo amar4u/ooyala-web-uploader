@@ -77,32 +77,6 @@
   });
 
   /**
-   * Provision the browseElement with the file selector
-   * @private
-   * @note:Technique to add the invisible file selector taken from Resummable.js (https://github.com/23/resumable.js)
-   * */
-  var initHTMLFileSelector = function(){
-    //This function is suppposed to be called using the context of the owner Object, 
-    //which in this case is the Ooyala.Client.HTMLUplaoder.
-    var that = this;
-    var sel = document.createElement("input");
-    sel.type = "file";
-
-    this.browseButton.style.display = "inline-block";
-    this.browseButton.style.position = "relative";
-    sel.style.position = "absolute";
-    sel.style.top = sel.style.left = sel.style.bottom = sel.style.right = 0;
-    sel.style.opacity = 0;
-    sel.style.cursor = "pointer";
-
-    this.browseButton.appendChild(sel);
-
-    sel.addEventListener("change", function(e){
-      that.file = sel.files[0];
-    }, false);
-  };
-
-  /**
    * HTMLUploader Object to interact with either the HTML5 File API if available or fallback 
    * to Flash file slicing and doing a chunked upload via HTTP.
    * */
@@ -124,11 +98,16 @@
     this.options = $.extend(defaults, options);
 
     if(isFileAPISuppported()){
-      initHTMLFileSelector.call(this);
+      this.chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
     }
     else{
       this.chunkProvider = new Ooyala.Client.FlashChunkProvider();
     }
+
+    var that = this;
+    this.chunkProvider.on("fileSelected", function(){
+      that.file = that.chunkProvider.file;
+    });
   };
 
   $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader, {
@@ -162,7 +141,6 @@
       }
 
       if(isFileAPISuppported()){
-        var chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file);
       }
       else{
         var chunkProvider = new Ooyala.Client.FlashChunkProvider();
