@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" applicationComplete="application1_applicationCompleteHandler(event)">
+  
+  <fx:Script>
+    <![CDATA[
+      import mx.core.Application;
+      import mx.core.FlexGlobals;
+      import mx.events.FlexEvent;
+      
+      private var fr:FileReference = new FileReference();
+      private var hasFileBeenLoaded:Boolean = false;
+      private var eventHandlers:Object = new Object();
+      
+      [Bindable]
+      private var applicationParameters:Object = FlexGlobals.topLevelApplication.parameters;
+      
+      public function on(eventName:String, eventHandler:String):void
+      {
+        if(eventHandlers[eventName]){
+          eventHandlers[eventName] = [];
+        }
+        
+        eventHandlers[eventName].push(eventHandler);
+      }
+      
+      public function slice(startByte:uint, endByte:uint, callback:String):void
+      {
+        var chunk:ByteArray = null;
+        if(hasFileBeenLoaded){
+          chunk = new ByteArray();
+          var offset:uint = endByte - startByte + 1;
+          fr.data.readBytes(chunk,0,offset);
+        }
+        
+        var data:String = chunk.readUTF();
+        
+        ExternalInterface.call(callback,data);
+      }
+      
+      protected function button1_clickHandler(event:MouseEvent):void
+      {
+        fr.browse();
+        
+        fr.addEventListener(Event.COMPLETE,function(ev:Event):void{
+          hasFileBeenLoaded = true;
+          fireEvent("complete");
+        });
+        
+        fr.addEventListener(ProgressEvent.PROGRESS, function(ev:ProgressEvent):void{
+          fireEvent("loadingProgress");
+        });
+        
+        fr.load();
+      }
+      
+      protected function application1_applicationCompleteHandler(event:FlexEvent):void
+      {
+        ExternalInterface.addCallback("slice", slice);
+        ExternalInterface.addCallback("on", on);
+      }
+      
+      private function fireEvent(eventName:String):void
+      {
+        if(eventHandlers[eventName]){
+          for(var i:uint = 0; i < eventHandlers[eventName].length; i++){
+            ExternalInterface.call(eventHandlers[eventName]);
+          }
+        }
+      }
+      
+    ]]>
+  </fx:Script>
+  
+  <fx:Declarations>
+    <!-- Place non-visual elements (e.g., services, value objects) here -->
+  </fx:Declarations>
+  <s:Button click="button1_clickHandler(event)" width="{applicationParameters.buttonWidth}" 
+            height="{applicationParameters.buttonHeight}">
+    <s:label>{applicationParameters.buttonLabel}</s:label>
+  </s:Button>
+</s:Application>
