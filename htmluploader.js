@@ -45,6 +45,7 @@
       var that = this;
 
       var onComplete = function(){
+        that.chunkProvider.detach("complete");
         var bytes = that.chunkProvider.data;
 
         var xhr = new XMLHttpRequest();

@@ -27,11 +27,11 @@
     }, false);
   };
 
->>>>>>> Stashed changes
-  Ooyala.Client.HTML5ChunkProvider = function(file){
+  Ooyala.Client.HTML5ChunkProvider = function(file, browseButton){
     Ooyala.Client.EventDispatcher.call(this);
     this.file = file;
     this.data = "";
+    this.browseButton = browseButton;
     //Call private method to initialize the file selector button.
     initHTMLFileSelector.call(this);
   };
