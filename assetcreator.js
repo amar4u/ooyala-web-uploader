@@ -114,7 +114,7 @@
       });
     },
 
-    assigLabels: function(labels, completionCallback, context){
+    assignLabels: function(labels, completionCallback, context){
       if(!this.embedCode){
         this._errorHandler("Asset has not been created");
         return;
@@ -153,7 +153,7 @@
       this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", null, {"status":"uploaded"}, function(){
         if(that.assetToUpload.labels){
           that._notifyAsyncOperation();
-          that.assigLabels(that.assetToUpload.labels, function(){
+          that.assignLabels(that.assetToUpload.labels, function(){
             that._asyncOperationCompleted();
           });
         }
