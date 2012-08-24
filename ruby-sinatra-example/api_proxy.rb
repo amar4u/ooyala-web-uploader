@@ -7,13 +7,10 @@ API_SECRET = "MSm5wS9oDVsnnIoaQAt5FNtvlNCiQ1wMMEOQ2iyA"
   end
 
   post '/api_proxy' do
-    #TODO: Implement API proxy using Ooyala V2 API Ruby SDK
     request_params = JSON.parse(URI.unescape(params[:query_params])) rescue {}
     body = URI.unescape(params[:body])
     path = "/v2/#{params[:path]}"
     api = Ooyala::API.new API_KEY, API_SECRET
-
-    puts body.to_yaml
 
     case params[:method].downcase
       when 'post' then api.post(path, request_params, body)
