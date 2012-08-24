@@ -1,5 +1,5 @@
 (function($){
-  
+
   Ooyala.Client.Events = {};
 
   Ooyala.Client.Events.PROGRESS = "progress";
@@ -13,7 +13,7 @@
       throw new Error("This uploader needs jQuery 1.5+ to be loaded.");
     }
     if(typeof(JSON) == "undefined"){
-      throw new Error("This uploader depend's on Douglas Crockford's JSON parser (https://github.com/douglascrockford/JSON-js) " + 
+      throw new Error("This uploader depend's on Douglas Crockford's JSON parser (https://github.com/douglascrockford/JSON-js) " +
                       "or one of the following browsers: Internet Explorer 8+, Firefox 3.1+, Safari 4+, Chrome 3+, and Opera 10.5+.");
     }
     if(!apiProxy){
@@ -37,12 +37,12 @@
     this.uploader = null;
 
     if(this.options.useAspera){
-      //TODO: Implement Aspera Uploader and plug it in here.  
+      //TODO: Implement Aspera Uploader and plug it in here.
     }
     else{//Default back to the HTML Uploader
       this.uploader = new Ooyala.Client.HTMLUploader(browseButton, options);
     }
-    
+
     var that = this;
 
     this.uploader.on(this.eventNames.PROGRESS, function(){that.progressHandler();});
@@ -151,21 +151,25 @@
 
       //Update the uploading_status of the asset via the API Proxy
       this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", null, {"status":"uploaded"}, function(){
-        if(that.assetToUpload.labels){
-          that._notifyAsyncOperation();
-          that.assignLabels(that.assetToUpload.labels, function(){
-            that._asyncOperationCompleted();
+       // if no labels nor metadata, complete the call
+       if (!that.assetToUpload.labels && !that.assetToUpload.metadata) {
+         that._completeHandler();
+         return;
+       }
+
+       if(that.assetToUpload.labels) {
+         that._notifyAsyncOperation();
+         that.assignLabels(that.assetToUpload.labels, function(){
+           that._asyncOperationCompleted();
+         });
+       }
+
+       if(that.assetToUpload.metadata) {
+         that._notifyAsyncOperation();
+         that.assignMetadata(that.assetToUpload.metadata, function(){
+           that._asyncOperationCompleted();
           });
-        }
-        else if(that.assetToUpload.metadata){
-          that.__asyncOperationsControl.push(1);
-          that.assignMetadata(that.assetToUpload.metadata, function(){
-            that._asyncOperationCompleted();
-          });
-        }
-        else{
-          that._completeHandler();
-        }
+       }
       });
     },
 
@@ -198,7 +202,7 @@
     _makeAPICall: function(method, path, params, body, success, failure, context){
       context = context || this;
 
-      //If no failure function has been provided, default to a function 
+      //If no failure function has been provided, default to a function
       //that fires an error event in case of failure
       failure = failure || function(error){ this._errorHandler(error)};
 
@@ -213,9 +217,9 @@
           query_params: JSON.stringify(params)
         }
       }).done(function(data){
-        success.call(context, data);  
+        success.call(context, data);
       }).fail(function(error){
-        failure.call(context, error); 
+        failure.call(context, error);
       });
     }
   });
