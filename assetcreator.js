@@ -36,7 +36,7 @@
                       "or one of the following browsers: Internet Explorer 8+, Firefox 3.1+, Safari 4+, Chrome 3+, and Opera 10.5+.");
     }
     if(!endpoint){
-      throw new Error("Please provide an Ooyala API Proxy.");
+      throw new Error("Please provide an endpoint URL.");
     }
     if(!browseButton && !dropArea){
       throw new Error("You need to provide either a button element to fire the file browsing action or a file drop area element.");
