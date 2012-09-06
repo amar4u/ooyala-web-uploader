@@ -7,7 +7,7 @@
   Ooyala.Client.Events.ERROR = "error";
   Ooyala.Client.Events.ASSET_CREATION_COMPLETE = "assetCreationComplete";
 
-  Ooyala.Client.AssetCreator = function(apiProxy, browseButton, dropArea, options){
+  Ooyala.Client.AssetCreator = function(endpoint, browseButton, dropArea, options){
     Ooyala.Client.EventDispatcher.call(this);
     if(typeof(jQuery) == "undefined"){
       throw new Error("This uploader needs jQuery 1.5+ to be loaded.");
@@ -16,7 +16,7 @@
       throw new Error("This uploader depend's on Douglas Crockford's JSON parser (https://github.com/douglascrockford/JSON-js) " +
                       "or one of the following browsers: Internet Explorer 8+, Firefox 3.1+, Safari 4+, Chrome 3+, and Opera 10.5+.");
     }
-    if(!apiProxy){
+    if(!endpoint){
       throw new Error("Please provide an Ooyala API Proxy.");
     }
     if(!browseButton && !dropArea){
@@ -29,7 +29,7 @@
 
     this.browseButton = browseButton;
     this.dropArea = dropArea;
-    this.apiProxy = apiProxy;
+    this.endpoint = endpoint;
     this.eventHandlers = {};
     this.options = options || {};
     this.eventNames = Ooyala.Client.Events;
@@ -207,7 +207,7 @@
       failure = failure || function(error){ this._errorHandler(error)};
 
       $.ajax({
-        url: this.apiProxy,
+        url: this.endpoint,
         type: "POST",
         dataType: "json",
         data: {
