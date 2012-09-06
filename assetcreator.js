@@ -7,6 +7,25 @@
   Ooyala.Client.Events.ERROR = "error";
   Ooyala.Client.Events.ASSET_CREATION_COMPLETE = "assetCreationComplete";
 
+  /**
+   * Upload assets to Ooyala using the chunked upload API.
+   *
+   * @param endpoint
+   *   The absolute URL to the endpoint the API we use to prepare an upload
+   *   and notify when an upload is complete.
+   * @param browseButton
+   *   The ID or DOM object of the button used to trigger browsing for an
+   *   asset to upload.
+   * @param dropArea
+   *   The DOM object of an area to use for Drag and Drop uploads of assets.
+   * @param options
+   *   An optional object of options to use when instantiating the uploader
+   *   with the following properties:
+   *   - useAspera: Set to TRUE to use the Aspera Uploader. Currently
+   *     unimplemented.
+   *   - postProcessingStatus: Set the post processing options for the asset.
+   *     Currently unimplemented.
+   */
   Ooyala.Client.AssetCreator = function(endpoint, browseButton, dropArea, options){
     Ooyala.Client.EventDispatcher.call(this);
     if(typeof(jQuery) == "undefined"){
