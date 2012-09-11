@@ -249,6 +249,28 @@
       _makeApiCall("POST", "assets", null, body);
     },
 
+    /**
+     * Private method to call our remote API endpoint. All other code should
+     * call methods such as createAsset instead of _makeAPICall() directly.
+     *
+     * @param method
+     *   The HTTP method as a string, such as "POST" or "PATCH".
+     * @param path
+     *   The relative path to the resource within the endpoint.
+     * @param params
+     *   An object of query parameters to include in a GET request.
+     * @param body
+     *   The object to use as the request body. The object will be converted to
+     *   JSON before being POSTed.
+     * @param success
+     *   A callback function to call in the case of a sucessfull API call.
+     * @param failure
+     *   Optional parameter of a callback function to call in the case of a
+     *   failed API call. Defaults to _errorHandler().
+     * @param context
+     *   Optional parameter of a reference to the object to use as the context
+     *   for the request. Defaults to "this".
+     */
     _makeAPICall: function(method, path, params, body, success, failure, context){
       context = context || this;
 
