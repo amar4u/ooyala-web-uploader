@@ -78,7 +78,7 @@
   };
 
   $.extend(Ooyala.Client.AssetCreator.prototype, new Ooyala.Client.EventDispatcher, {
-    createAsset: function(name, description, labels, metadata){
+    prepareUpload: function(name, description, labels, metadata){
       var that = this;
 
       //Dispatch error event if the user has not selected a file
