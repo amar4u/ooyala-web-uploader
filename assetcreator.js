@@ -242,7 +242,7 @@
       failure = failure || function(error){ this._errorHandler(error)};
 
       $.ajax({
-        url: this.endpoint,
+        url: this.endpoint + '/' + path,
         type: "POST",
         dataType: "json",
         data: {
