@@ -218,6 +218,37 @@
       this.dispatchEvent(this.eventNames.ERROR, [error]);
     },
 
+    /**
+     * Create an asset in preparation for uploading to Ooyala.
+     *
+     * @param name
+     *   The name of the asset to create.
+     * @param description
+     *   The short text description of the asset.
+     * @param file_size
+     *   The number of bytes of the asset to upload.
+     * @param chunk_size
+     *   The size of each chunk to upload in bytes.
+     * @param asset_type
+     *   Optional parameter of the asset type to create. Defaults to "video".
+     *
+     * @return
+     *   An object containing the following properties:
+     *   - embed_code: The embed code for the asset that was created.
+     *   - uploading_urls: An array of URLs to upload each chunk to.
+     */
+    createAsset: function(name, description, file_size, chunk_size, asset_type) {
+      var body = {
+        name: name,
+        description: description,
+        file_size: file_size,
+        chunk_size: chunk_size,
+        asset_type: (typeof asset_type != undefined) ? asset_type : 'video'
+      };
+
+      _makeApiCall("POST", "assets", null, body);
+    },
+
     _makeAPICall: function(method, path, params, body, success, failure, context){
       context = context || this;
 
