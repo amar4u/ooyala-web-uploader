@@ -1,7 +1,16 @@
 <?php
 require 'OoyalaApi.php';
 
-$api = new OoyalaApi("E1MWo6Boqq_S9PrsnZteUoe2X4qK.Zi4rW","MSm5wS9oDVsnnIoaQAt5FNtvlNCiQ1wMMEOQ2iyA");
+/**
+ * Place your API keys from the Ooyala backlot here. It is highly recommended
+ * that this example not be used on a publicly accesible web server, as any
+ * user who can access this example will be able to upload assets to your
+ * backlot account.
+ */
+define("OOYALA_API_KEY", "");
+define("OOYALA_API_SECRET", "");
+
+$api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
 
 $method = $_POST["method"];
 $parameters = json_decode($_POST["query_params"]);
