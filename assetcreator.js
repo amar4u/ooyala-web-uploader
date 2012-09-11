@@ -205,7 +205,7 @@
         file_name: file_name,
         file_size: file_size,
         chunk_size: chunk_size,
-        asset_type: (typeof asset_type != undefined) ? asset_type : 'video'
+        asset_type: (typeof asset_type != 'undefined') ? asset_type : 'video'
       };
 
       this._makeAPICall("POST", "assets", body, function(data){
