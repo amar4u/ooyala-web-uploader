@@ -114,7 +114,7 @@
 
       // Send the asset creation call to the API Proxy and fire the
       // corresponding events.
-      this.createAsset(this.assetToUpload.name, this.assetToUpload.description, fileToUpload.size, this.uploader.chunkSize);
+      this.createAsset(this.assetToUpload.name, this.assetToUpload.description, fileToUpload.name, fileToUpload.size, this.uploader.chunkSize);
     },
 
     upload: function(){
@@ -183,6 +183,8 @@
      *   The name of the asset to create.
      * @param description
      *   The short text description of the asset.
+     * @param file_name
+     *   The file name of the asset being uploaded.
      * @param file_size
      *   The number of bytes of the asset to upload.
      * @param chunk_size
@@ -195,11 +197,12 @@
      *   - embed_code: The embed code for the asset that was created.
      *   - uploading_urls: An array of URLs to upload each chunk to.
      */
-    createAsset: function(name, description, file_size, chunk_size, asset_type) {
+    createAsset: function(name, description, file_name, file_size, chunk_size, asset_type) {
       var that = this;
       var body = {
         name: name,
         description: description,
+        file_name: file_name,
         file_size: file_size,
         chunk_size: chunk_size,
         asset_type: (typeof asset_type != undefined) ? asset_type : 'video'
