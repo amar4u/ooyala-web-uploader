@@ -78,7 +78,7 @@
   };
 
   $.extend(Ooyala.Client.AssetCreator.prototype, new Ooyala.Client.EventDispatcher, {
-    prepareUpload: function(name, description, labels, metadata){
+    prepareUpload: function(name, description){
       var that = this;
 
       //Dispatch error event if the user has not selected a file
@@ -92,8 +92,6 @@
       this.assetToUpload = {
         name: name,
         description: description,
-        labels: labels,
-        metadata: metadata
       };
 
       //Take into consideration the Post Processing Status option if present
@@ -122,30 +120,6 @@
       });
     },
 
-    assignLabels: function(labels, completionCallback, context){
-      if(!this.embedCode){
-        this._errorHandler("Asset has not been created");
-        return;
-      }
-
-      context = context || this;
-
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/labels", null, labels, function(){
-        completionCallback.call(context);
-      });
-    },
-
-    assignMetadata: function(metadata, completionCallback, context){
-      if(!this.embedCode){
-        this._errorHandler("Asset has not been created");
-        return;
-      }
-
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/metadata", null, metadata, function(){
-        completionCallback.call(context);
-      });
-    },
-
     progress: function(){
       return this.uploader ? this.uploader.progress() : 0;
     },
@@ -159,25 +133,7 @@
 
       //Update the uploading_status of the asset via the API Proxy
       this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", null, {"status":"uploaded"}, function(){
-       // if no labels nor metadata, complete the call
-       if (!that.assetToUpload.labels && !that.assetToUpload.metadata) {
-         that._completeHandler();
-         return;
-       }
-
-       if(that.assetToUpload.labels) {
-         that._notifyAsyncOperation();
-         that.assignLabels(that.assetToUpload.labels, function(){
-           that._asyncOperationCompleted();
-         });
-       }
-
-       if(that.assetToUpload.metadata) {
-         that._notifyAsyncOperation();
-         that.assignMetadata(that.assetToUpload.metadata, function(){
-           that._asyncOperationCompleted();
-          });
-       }
+       that._completeHandler();
       });
     },
 
