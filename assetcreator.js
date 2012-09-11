@@ -244,13 +244,9 @@
       $.ajax({
         url: this.endpoint + '/' + path,
         type: "POST",
+        contentType: 'application/json',
         dataType: "json",
-        data: {
-          path: path,
-          method: method,
-          body: JSON.stringify(body),
-          query_params: JSON.stringify(params)
-        }
+        data: JSON.stringify(body)
       }).done(function(data){
         success.call(context, data);
       }).fail(function(error){
