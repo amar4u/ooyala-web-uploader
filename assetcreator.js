@@ -96,25 +96,14 @@
         metadata: metadata
       };
 
-      var body =  {
-          name: this.assetToUpload.name,
-          description: this.assetToUpload.description,
-          file_size: fileToUpload.size,
-          file_name: fileToUpload.name,
-          chunk_size: this.uploader.chunkSize,
-          asset_type: "video"
-      };
-
       //Take into consideration the Post Processing Status option if present
       if(this.options.postProcessingStatus){
         body.postProcessingStatus = this.options.postProcessingStatus;
       }
 
-      //Send the asset creation call to the API Proxy and fire the corresponding events
-      this._makeAPICall("POST", "assets", null, body, function(data){
-        that.embedCode = data.embed_code;
-        that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
-      });
+      // Send the asset creation call to the API Proxy and fire the
+      // corresponding events.
+      this.createAsset(this.assetToUpload.name, this.assetToUpload.description, fileToUpload.size, this.uploader.chunkSize);
     },
 
     upload: function(){
@@ -238,6 +227,7 @@
      *   - uploading_urls: An array of URLs to upload each chunk to.
      */
     createAsset: function(name, description, file_size, chunk_size, asset_type) {
+      var that = this;
       var body = {
         name: name,
         description: description,
@@ -246,7 +236,10 @@
         asset_type: (typeof asset_type != undefined) ? asset_type : 'video'
       };
 
-      _makeApiCall("POST", "assets", null, body);
+      _makeApiCall("POST", "assets", null, body, function(data){
+        that.embedCode = data.embed_code;
+        that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
+      });
     },
 
     /**
