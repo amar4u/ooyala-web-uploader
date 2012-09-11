@@ -78,6 +78,19 @@
   };
 
   $.extend(Ooyala.Client.AssetCreator.prototype, new Ooyala.Client.EventDispatcher, {
+    /**
+     * Prepare to upload an Ooyala asset.
+     *
+     * This method will validate the information provided by the user (such as
+     * ensuring that they selected a file) and if everything passes reserve an
+     * embed code with the Ooyala backlot. The event fired from sucessfully
+     * creating the embed code will trigger the actual upload of the asset.
+     *
+     * @param name
+     *   The name of the asset to create.
+     * @param description
+     *   The short text description of the asset.
+     */
     prepareUpload: function(name, description){
       var that = this;
 
