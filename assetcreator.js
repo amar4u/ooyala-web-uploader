@@ -127,7 +127,7 @@
         return;
       }
 
-      this._makeAPICall("GET", "assets/" + this.embedCode + "/uploading_urls", null, null, function(data){
+      this._makeAPICall("GET", "assets/" + this.embedCode + "/uploading_urls", null, function(data){
         that.uploader.setUploadingURLs(data);
         that.uploader.upload();
       });
@@ -145,7 +145,7 @@
       var that = this;
 
       //Update the uploading_status of the asset via the API Proxy
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", null, {"status":"uploaded"}, function(){
+      this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", {"status":"uploaded"}, function(){
        that._completeHandler();
       });
     },
@@ -208,7 +208,7 @@
         asset_type: (typeof asset_type != undefined) ? asset_type : 'video'
       };
 
-      _makeApiCall("POST", "assets", null, body, function(data){
+      this._makeAPICall("POST", "assets", body, function(data){
         that.embedCode = data.embed_code;
         that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
       });
@@ -222,8 +222,6 @@
      *   The HTTP method as a string, such as "POST" or "PATCH".
      * @param path
      *   The relative path to the resource within the endpoint.
-     * @param params
-     *   An object of query parameters to include in a GET request.
      * @param body
      *   The object to use as the request body. The object will be converted to
      *   JSON before being POSTed.
@@ -236,7 +234,7 @@
      *   Optional parameter of a reference to the object to use as the context
      *   for the request. Defaults to "this".
      */
-    _makeAPICall: function(method, path, params, body, success, failure, context){
+    _makeAPICall: function(method, path, body, success, failure, context){
       context = context || this;
 
       //If no failure function has been provided, default to a function
