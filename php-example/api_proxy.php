@@ -106,7 +106,7 @@ function uploadStatus($asset) {
   try {
     $api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
 
-    $response = $api->post("assets/" . $asset->embed_code . "/upload_status", $asset->status);
+    $response = $api->put("assets/" . $asset->embed_code . "/upload_status", $asset->status);
     return $response;
   }
   catch(Exception $e){
