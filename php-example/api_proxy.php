@@ -44,7 +44,7 @@ function http403() {
  *   The exception message that caused this request to fail.
  */
 function http500($message) {
-  header("Status: 500 Internal Server Error");
+  header("HTTP/1.1 500 Internal Server Error");
   error_log($message);
   exit;
 }
