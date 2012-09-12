@@ -77,6 +77,8 @@ function createAsset($clientAsset) {
   }
 
   try {
+    $api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
+
     $asset = $api->post("assets", $asset);
     $uploading_urls = $api->get("assets/" . $asset->embed_code . "/uploading_urls");
 
@@ -102,6 +104,8 @@ function createAsset($clientAsset) {
  */
 function uploadStatus($asset) {
   try {
+    $api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
+
     $response = $api->post("assets/" . $asset->embed_code . "/upload_status", $asset->status);
     return $response;
   }
@@ -116,8 +120,6 @@ function uploadStatus($asset) {
 if (!isset($_SERVER['PATH_INFO']) || !$path = parsePath($_SERVER['PATH_INFO'])) {
   http403();
 }
-
-$api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
 
 // We can't use $_POST since that only works if we are posting urlencoded data
 // and not pure JSON.
