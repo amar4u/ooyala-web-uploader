@@ -90,6 +90,26 @@ function createAsset($clientAsset) {
   }
 }
 
+/**
+ * Set the upload status for an asset.
+ *
+ * @param $asset
+ *   An object representing the asset, containing at a minimum "embed_code" and
+ *   "status" properties.
+ *
+ * @return
+ *   The status of the asset.
+ */
+function uploadStatus($asset) {
+  try {
+    $response = $api->post("assets/" . $asset->embed_code . "/upload_status", $asset->status);
+    return $response;
+  }
+  catch(Exception $e){
+    http500($e->getMessage());
+  }
+}
+
 // End of functions, begin our script here.
 
 // Determine if we've been called with a a valid path to a resource.
@@ -109,6 +129,12 @@ if (count($path) == 1) {
   exit(json_encode($response));
 }
 else {
-  $embed_code = $path[1];
+  // The client is calling /asset/embed_code so they are marking an asset as
+  // uploaded.
+  $asset = new stdClass();
+  $asset->embed_code = $path[1];
+  $asset->status = $requestObject->status;
+  $response = uploadStatus($asset);
+  exit(json_encode($response));
 }
 
