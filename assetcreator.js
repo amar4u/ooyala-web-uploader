@@ -157,6 +157,8 @@
     },
 
     _completeHandler: function(){
+      var that = this;
+
       //Wait until all asynchronous operations have been completed
       if(this.__asyncOperationsControl.length){
         return;
