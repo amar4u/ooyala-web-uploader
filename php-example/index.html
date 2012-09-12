@@ -16,10 +16,6 @@
       <input type="text" id="assetName" value="HTML5 Test"/>
       <label for="assetDescription">Description: </label>
       <input type="text" id="assetDescription" value="Blah"/>
-      <label for="assetLabels">Labels: </label>
-      <input type="text" id="assetLabels" value="/HTML5 Test"/>
-      <label for="assetMetadata">Metadata: </label>
-      <input type="text" id="assetMetadata" value=""/>
       <a id="selectAsset">Select Asset</a>
     </div>
     <div>
@@ -40,7 +36,7 @@
       });
 
       function upload(){
-        uploader.createAsset($("#assetName").val(), $("#assetDescription").val(), [$("#assetLabels").val()], $("#assetMetadata").val());
+        uploader.prepareUpload($("#assetName").val(), $("#assetDescription").val());
       }
     </script>
     </body>

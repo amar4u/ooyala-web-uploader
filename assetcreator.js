@@ -7,7 +7,26 @@
   Ooyala.Client.Events.ERROR = "error";
   Ooyala.Client.Events.ASSET_CREATION_COMPLETE = "assetCreationComplete";
 
-  Ooyala.Client.AssetCreator = function(apiProxy, browseButton, dropArea, options){
+  /**
+   * Upload assets to Ooyala using the chunked upload API.
+   *
+   * @param endpoint
+   *   The absolute URL to the endpoint the API we use to prepare an upload
+   *   and notify when an upload is complete.
+   * @param browseButton
+   *   The ID or DOM object of the button used to trigger browsing for an
+   *   asset to upload.
+   * @param dropArea
+   *   The DOM object of an area to use for Drag and Drop uploads of assets.
+   * @param options
+   *   An optional object of options to use when instantiating the uploader
+   *   with the following properties:
+   *   - useAspera: Set to TRUE to use the Aspera Uploader. Currently
+   *     unimplemented.
+   *   - postProcessingStatus: Set the post processing options for the asset.
+   *     Currently unimplemented.
+   */
+  Ooyala.Client.AssetCreator = function(endpoint, browseButton, dropArea, options){
     Ooyala.Client.EventDispatcher.call(this);
     if(typeof(jQuery) == "undefined"){
       throw new Error("This uploader needs jQuery 1.5+ to be loaded.");
@@ -16,8 +35,8 @@
       throw new Error("This uploader depend's on Douglas Crockford's JSON parser (https://github.com/douglascrockford/JSON-js) " +
                       "or one of the following browsers: Internet Explorer 8+, Firefox 3.1+, Safari 4+, Chrome 3+, and Opera 10.5+.");
     }
-    if(!apiProxy){
-      throw new Error("Please provide an Ooyala API Proxy.");
+    if(!endpoint){
+      throw new Error("Please provide an endpoint URL.");
     }
     if(!browseButton && !dropArea){
       throw new Error("You need to provide either a button element to fire the file browsing action or a file drop area element.");
@@ -29,7 +48,7 @@
 
     this.browseButton = browseButton;
     this.dropArea = dropArea;
-    this.apiProxy = apiProxy;
+    this.endpoint = endpoint;
     this.eventHandlers = {};
     this.options = options || {};
     this.eventNames = Ooyala.Client.Events;
@@ -59,7 +78,20 @@
   };
 
   $.extend(Ooyala.Client.AssetCreator.prototype, new Ooyala.Client.EventDispatcher, {
-    createAsset: function(name, description, labels, metadata){
+    /**
+     * Prepare to upload an Ooyala asset.
+     *
+     * This method will validate the information provided by the user (such as
+     * ensuring that they selected a file) and if everything passes reserve an
+     * embed code with the Ooyala backlot. The event fired from sucessfully
+     * creating the embed code will trigger the actual upload of the asset.
+     *
+     * @param name
+     *   The name of the asset to create.
+     * @param description
+     *   The short text description of the asset.
+     */
+    prepareUpload: function(name, description){
       var that = this;
 
       //Dispatch error event if the user has not selected a file
@@ -73,17 +105,6 @@
       this.assetToUpload = {
         name: name,
         description: description,
-        labels: labels,
-        metadata: metadata
-      };
-
-      var body =  {
-          name: this.assetToUpload.name,
-          description: this.assetToUpload.description,
-          file_size: fileToUpload.size,
-          file_name: fileToUpload.name,
-          chunk_size: this.uploader.chunkSize,
-          asset_type: "video"
       };
 
       //Take into consideration the Post Processing Status option if present
@@ -91,11 +112,9 @@
         body.postProcessingStatus = this.options.postProcessingStatus;
       }
 
-      //Send the asset creation call to the API Proxy and fire the corresponding events
-      this._makeAPICall("POST", "assets", null, body, function(data){
-        that.embedCode = data.embed_code;
-        that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
-      });
+      // Send the asset creation call to the API Proxy and fire the
+      // corresponding events.
+      this.createAsset(this.assetToUpload.name, this.assetToUpload.description, fileToUpload.name, fileToUpload.size, this.uploader.chunkSize);
     },
 
     upload: function(){
@@ -108,34 +127,7 @@
         return;
       }
 
-      this._makeAPICall("GET", "assets/" + this.embedCode + "/uploading_urls", null, null, function(data){
-        that.uploader.setUploadingURLs(data);
-        that.uploader.upload();
-      });
-    },
-
-    assignLabels: function(labels, completionCallback, context){
-      if(!this.embedCode){
-        this._errorHandler("Asset has not been created");
-        return;
-      }
-
-      context = context || this;
-
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/labels", null, labels, function(){
-        completionCallback.call(context);
-      });
-    },
-
-    assignMetadata: function(metadata, completionCallback, context){
-      if(!this.embedCode){
-        this._errorHandler("Asset has not been created");
-        return;
-      }
-
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/metadata", null, metadata, function(){
-        completionCallback.call(context);
-      });
+      that.uploader.upload();
     },
 
     progress: function(){
@@ -150,26 +142,8 @@
       var that = this;
 
       //Update the uploading_status of the asset via the API Proxy
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", null, {"status":"uploaded"}, function(){
-       // if no labels nor metadata, complete the call
-       if (!that.assetToUpload.labels && !that.assetToUpload.metadata) {
-         that._completeHandler();
-         return;
-       }
-
-       if(that.assetToUpload.labels) {
-         that._notifyAsyncOperation();
-         that.assignLabels(that.assetToUpload.labels, function(){
-           that._asyncOperationCompleted();
-         });
-       }
-
-       if(that.assetToUpload.metadata) {
-         that._notifyAsyncOperation();
-         that.assignMetadata(that.assetToUpload.metadata, function(){
-           that._asyncOperationCompleted();
-          });
-       }
+      this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", {"status":"uploaded"}, function(){
+       that._completeHandler();
       });
     },
 
@@ -183,6 +157,8 @@
     },
 
     _completeHandler: function(){
+      var that = this;
+
       //Wait until all asynchronous operations have been completed
       if(this.__asyncOperationsControl.length){
         return;
@@ -199,7 +175,66 @@
       this.dispatchEvent(this.eventNames.ERROR, [error]);
     },
 
-    _makeAPICall: function(method, path, params, body, success, failure, context){
+    /**
+     * Create an asset in preparation for uploading to Ooyala.
+     *
+     * @param name
+     *   The name of the asset to create.
+     * @param description
+     *   The short text description of the asset.
+     * @param file_name
+     *   The file name of the asset being uploaded.
+     * @param file_size
+     *   The number of bytes of the asset to upload.
+     * @param chunk_size
+     *   The size of each chunk to upload in bytes.
+     * @param asset_type
+     *   Optional parameter of the asset type to create. Defaults to "video".
+     *
+     * @return
+     *   An object containing the following properties:
+     *   - embed_code: The embed code for the asset that was created.
+     *   - uploading_urls: An array of URLs to upload each chunk to.
+     */
+    createAsset: function(name, description, file_name, file_size, chunk_size, asset_type) {
+      var that = this;
+      var body = {
+        name: name,
+        description: description,
+        file_name: file_name,
+        file_size: file_size,
+        chunk_size: chunk_size,
+        asset_type: (typeof asset_type != 'undefined') ? asset_type : 'video'
+      };
+
+      this._makeAPICall("POST", "assets", body, function(data){
+        that.embedCode = data.embed_code;
+        that.uploader.setUploadingURLs(data.uploading_urls);
+        that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
+      });
+    },
+
+    /**
+     * Private method to call our remote API endpoint. All other code should
+     * call methods such as createAsset instead of _makeAPICall() directly.
+     *
+     * @param method
+     *   The HTTP method as a string, such as "POST" or "PATCH".
+     * @param path
+     *   The relative path to the resource within the endpoint.
+     * @param body
+     *   The object to use as the request body. The object will be converted to
+     *   JSON before being POSTed.
+     * @param success
+     *   A callback function to call in the case of a sucessfull API call.
+     * @param failure
+     *   Optional parameter of a callback function to call in the case of a
+     *   failed API call. Defaults to _errorHandler().
+     * @param context
+     *   Optional parameter of a reference to the object to use as the context
+     *   for the request. Defaults to "this".
+     */
+    _makeAPICall: function(method, path, body, success, failure, context){
       context = context || this;
 
       //If no failure function has been provided, default to a function
@@ -207,15 +242,11 @@
       failure = failure || function(error){ this._errorHandler(error)};
 
       $.ajax({
-        url: this.apiProxy,
+        url: this.endpoint + '/' + path,
         type: "POST",
+        contentType: 'application/json',
         dataType: "json",
-        data: {
-          path: path,
-          method: method,
-          body: JSON.stringify(body),
-          query_params: JSON.stringify(params)
-        }
+        data: JSON.stringify(body)
       }).done(function(data){
         success.call(context, data);
       }).fail(function(error){
