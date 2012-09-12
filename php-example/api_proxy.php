@@ -49,18 +49,16 @@ function http500($e) {
   exit;
 }
 
-// End of functions, begin our script here.
-if (!isset($_SERVER['PATH_INFO']) || !$path = parsePath($_SERVER['PATH_INFO'])) {
-  http403();
-}
-
-$api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
-
-// We can't use $_POST since that only works if we are posting urlencoded data
-// and not pure JSON.
-$clientAsset = json_decode(file_get_contents("php://input"));
-
-if (count($path) == 1) {
+/**
+ * Create a new asset in preparation for uploading.
+ *
+ * @param $clientAsset
+ *   An object with the properties of the new asset to upload.
+ *
+ * @return
+ *   An object with the new embed code and the urls to upload each chunk to.
+ */
+function createAsset($clientAsset) {
   // Build our request to create the new asset.
   $asset = new stdClass();
   $properties = array(
@@ -73,8 +71,7 @@ if (count($path) == 1) {
   );
   foreach ($properties as $property) {
     if (!isset($clientAsset->$property)) {
-      header("HTTP/1.1 403 Access denied");
-      exit;
+      http403();
     }
     $asset->{$property} = $clientAsset->{$property};
   }
@@ -86,11 +83,30 @@ if (count($path) == 1) {
     $response = new stdClass();
     $response->embed_code = $asset->embed_code;
     $response->uploading_urls = $uploading_urls;
-    exit(json_encode($response));
+    return $response;
   }
   catch(Exception $e){
     http500($e);
   }
+}
+
+// End of functions, begin our script here.
+
+// Determine if we've been called with a a valid path to a resource.
+if (!isset($_SERVER['PATH_INFO']) || !$path = parsePath($_SERVER['PATH_INFO'])) {
+  http403();
+}
+
+$api = new OoyalaApi(OOYALA_API_KEY, OOYALA_API_SECRET);
+
+// We can't use $_POST since that only works if we are posting urlencoded data
+// and not pure JSON.
+$requestObject = json_decode(file_get_contents("php://input"));
+
+if (count($path) == 1) {
+  // The client is calling /asset to create a new asset for uploading.
+  $response = createAsset($requestObject);
+  exit(json_encode($response));
 }
 else {
   $embed_code = $path[1];
