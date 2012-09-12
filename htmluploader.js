@@ -142,7 +142,7 @@
       }
 
       if(isFileAPISuppported()){
-        this.chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
+        var chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
       }
       else{
         var chunkProvider = new Ooyala.Client.FlashChunkProvider();
