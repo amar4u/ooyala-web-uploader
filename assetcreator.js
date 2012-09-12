@@ -127,10 +127,7 @@
         return;
       }
 
-      this._makeAPICall("GET", "assets/" + this.embedCode + "/uploading_urls", null, function(data){
-        that.uploader.setUploadingURLs(data);
-        that.uploader.upload();
-      });
+      that.uploader.upload();
     },
 
     progress: function(){
@@ -210,6 +207,7 @@
 
       this._makeAPICall("POST", "assets", body, function(data){
         that.embedCode = data.embed_code;
+        that.uploader.setUploadingURLs(data.uploading_urls);
         that.dispatchEvent(that.eventNames.ASSET_CREATION_COMPLETE);
       });
     },
