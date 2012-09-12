@@ -40,12 +40,12 @@ function http403() {
 /**
  * Kill this request with a 500.
  *
- * @param $e
- *   The exception that caused this request to fail.
+ * @param $message
+ *   The exception message that caused this request to fail.
  */
-function http500($e) {
+function http500($message) {
   header("Status: 500 Internal Server Error");
-  error_log($e->getMessage());
+  error_log($message);
   exit;
 }
 
@@ -71,7 +71,7 @@ function createAsset($clientAsset) {
   );
   foreach ($properties as $property) {
     if (!isset($clientAsset->$property)) {
-      http403();
+      http500("The $property is missing from from the asset.");
     }
     $asset->{$property} = $clientAsset->{$property};
   }
@@ -86,7 +86,7 @@ function createAsset($clientAsset) {
     return $response;
   }
   catch(Exception $e){
-    http500($e);
+    http500($e->getMessage());
   }
 }
 
