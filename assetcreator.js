@@ -243,7 +243,7 @@
 
       $.ajax({
         url: this.endpoint + '/' + path,
-        type: "POST",
+        type: method,
         contentType: 'application/json',
         dataType: "json",
         data: JSON.stringify(body)
