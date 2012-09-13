@@ -142,7 +142,7 @@
       var that = this;
 
       //Update the uploading_status of the asset via the API Proxy
-      this._makeAPICall("PUT", "assets/" + this.embedCode + "/upload_status", {"status":"uploaded"}, function(){
+      this._makeAPICall("PUT", "assets/" + this.embedCode, {"status":"uploaded"}, function(){
        that._completeHandler();
       });
     },
