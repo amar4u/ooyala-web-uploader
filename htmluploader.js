@@ -54,7 +54,7 @@
 
         xhr.open("POST", that.url);
 
-        if(window.Blob){
+        if(window.Blob && document.getElementById("flashChunkProvider")==null){
           var data = new FormData();
           data.append("chunk", bytes);
           xhr.send(data);
@@ -63,7 +63,9 @@
 
           var boundary = "--------------------------" + Math.random().toString().replace("0.","");
 
-          var body = "--" + boundary + '\r\nContent-Disposition: form-data; name="file"; filename="blob"\r\nContent-Type: application/octet-stream\r\n\r\n' + bytes + "\r\n--" + boundary + "--\r\n";
+          var body = "--" + boundary + '\r\nContent-Disposition: form-data; name="file"; filename="blob"\r\nContent-Type: application/octet-stream' + (document.getElementById('flashChunkProvider')?
+          '; Content-Transfer-Encoding: base64':'')+
+          '\r\n\r\n' + bytes + "\r\n--" + boundary + "--\r\n";
 
           xhr.setRequestHeader("content-type", "multipart/form-data; charset=x-user-defined-binary; boundary=" + boundary);
           
@@ -85,7 +87,7 @@
     Ooyala.Client.Uploader.call(this);
     this.chunksUploaded = 0;
     this.chunkProvider = null;
-    this.totalChunks = this.uploadingURLs.lenght;
+    this.totalChunks = this.uploadingURLs.length;
     this.currentChunks = [];
     this.shouldStopBecauseOfError = false;
     this.browseButton = browseButton;
@@ -102,20 +104,23 @@
       this.chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
     }
     else{
-      this.chunkProvider = new Ooyala.Client.FlashChunkProvider();
-    }
-
-    var that = this;
+      this.chunkProvider = new Ooyala.Client.FlashChunkProvider(this.browseButton);
+    } 
+    
     this.chunkProvider.on("fileSelected", function(){
-      that.file = that.chunkProvider.file;
-    });
-  };
+       that.file = that.chunkProvider.file;
+       window.uploader.file = that.chunkProvider.file;
+     });
 
-  $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader, {
+
+  };
+   
+    $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader, {
     /**
      * Start uploading the selected file.
      * */
     upload: function(){
+     this.totalChunks = this.uploadingURLs.length;
       for(var i = 0; i < this.options.maxNumberOfConcurrnetChunks; i++){
         this.uploadNextChunk();
       }
@@ -141,16 +146,12 @@
         return;
       }
 
-      if(isFileAPISuppported()){
-        var chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
-      }
-      else{
-        var chunkProvider = new Ooyala.Client.FlashChunkProvider();
-      }
-
-      var uploadableChunk = new UploadableChunk(urlToUpload, chunkProvider, that.options.maxChunkRetries);
+      var uploadableChunk = new UploadableChunk(urlToUpload, this.chunkProvider, that.options.maxChunkRetries);
       //Upload the next chunk if this one has completed uploading
-      uploadableChunk.on("complete", function(){that.chunksUploaded++; that.uploadNextChunk();});
+      uploadableChunk.on("complete", function(){
+      that.chunksUploaded++; 
+      that.uploadNextChunk();
+      });
 
       //If an error is thrown by one of the chunks, 
       //set the flag to stop the ingestion.

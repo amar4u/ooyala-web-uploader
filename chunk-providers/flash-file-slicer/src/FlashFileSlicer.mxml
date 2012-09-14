@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
                xmlns:s="library://ns.adobe.com/flex/spark" 
-               xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" applicationComplete="application1_applicationCompleteHandler(event)">
+               xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" applicationComplete="application1_applicationCompleteHandler(event)"
+               preinitialize="onApplicationPreinitialize(event)">
   
   <fx:Script>
     <![CDATA[
+    
       import mx.core.Application;
       import mx.core.FlexGlobals;
       import mx.events.FlexEvent;
+      import mx.utils.Base64Encoder;
       
       private var fr:FileReference = new FileReference();
       private var hasFileBeenLoaded:Boolean = false;
       private var eventHandlers:Object = new Object();
-      
+      /** The id of the HTML chunk provider element */
+      private var chunkProviderId:String;
+
       [Bindable]
-      private var applicationParameters:Object = FlexGlobals.topLevelApplication.parameters;
-      
+      private var buttonWidth:Number;
+      [Bindable]
+      private var buttonHeight:Number;
+      [Bindable]
+      private var buttonLabel:String;
+              
       public function on(eventName:String, eventHandler:String):void
       {
-        if(eventHandlers[eventName]){
+        if(!eventHandlers[eventName]){
           eventHandlers[eventName] = [];
         }
         
@@ -30,42 +39,95 @@
         var chunk:ByteArray = null;
         if(hasFileBeenLoaded){
           chunk = new ByteArray();
-          var offset:uint = endByte - startByte + 1;
-          fr.data.readBytes(chunk,0,offset);
+          fr.data.position = startByte;
+          var length:uint = endByte - startByte-1;
+          fr.data.readBytes(chunk,0,length);
         }
+        chunk.position = 0;
+        var base64:Base64Encoder = new Base64Encoder();
+        base64.encodeBytes(chunk);
         
-        var data:String = chunk.readUTF();
+        var data:String = base64.toString();
         
         ExternalInterface.call(callback,data);
       }
       
       protected function button1_clickHandler(event:MouseEvent):void
       {
+        
+        fr.addEventListener(Event.SELECT, 
+          function (event:Event):void
+          {
+            fileSelector.label = "Loading...";
+            fileSelector.enabled = false;
+            fr.load();
+          });
+        
+        
+        fr.addEventListener(Event.COMPLETE, onFileReadComplete);
+
+       
+        fr.addEventListener(ProgressEvent.PROGRESS, 
+          function(ev:ProgressEvent):void
+          {
+            fileSelector.label = "Loading "+(int(ev.bytesLoaded/ev.bytesTotal*100) )+"%";
+          });
+        
         fr.browse();
-        
-        fr.addEventListener(Event.COMPLETE,function(ev:Event):void{
-          hasFileBeenLoaded = true;
-          fireEvent("complete");
-        });
-        
-        fr.addEventListener(ProgressEvent.PROGRESS, function(ev:ProgressEvent):void{
-          fireEvent("loadingProgress");
-        });
-        
-        fr.load();
+      
       }
       
+      protected function onFileReadComplete(event:Event):void 
+      {
+        fileSelector.label = buttonLabel;
+        fileSelector.enabled = true;
+        
+          hasFileBeenLoaded = true; 
+          
+          // Assign required file information to javascript object
+        var javascriptFunction:String ="function () {" +
+          "window.uploader.uploader.chunkProvider.file = {"+
+          "'name': '"+ fr.name + "',"+
+          "'size': "+ fr.size + 
+           "};" +
+          "}";
+          
+        ExternalInterface.call(javascriptFunction);
+        
+        //  fire event for Javascript
+        fireEvent("fileSelected");
+      }
+      
+      private function initializeFlashVars():void
+      {
+        buttonWidth = FlexGlobals.topLevelApplication.parameters.buttonWidth;
+        buttonHeight = FlexGlobals.topLevelApplication.parameters.buttonHeight;
+        buttonLabel = FlexGlobals.topLevelApplication.parameters.buttonLabel;
+        chunkProviderId = FlexGlobals.topLevelApplication.parameters.chunkProviderId;
+      }
+      
+      protected function onApplicationPreinitialize(event:FlexEvent):void
+      {
+        flash.system.Security.allowDomain("*");     
+      }
       protected function application1_applicationCompleteHandler(event:FlexEvent):void
       {
-        ExternalInterface.addCallback("slice", slice);
-        ExternalInterface.addCallback("on", on);
+        
+        initializeFlashVars();
+        fileSelector.toolTip = null;
+        ExternalInterface.addCallback("getChunk", slice);   
+        this.on("fileSelected", 
+          "function () {" +
+          " window.uploader.uploader.chunkProvider._flashFileSelected()" +
+          "}");
+
       }
       
       private function fireEvent(eventName:String):void
       {
         if(eventHandlers[eventName]){
           for(var i:uint = 0; i < eventHandlers[eventName].length; i++){
-            ExternalInterface.call(eventHandlers[eventName]);
+            ExternalInterface.call(eventHandlers[eventName][i]);
           }
         }
       }
@@ -76,8 +138,8 @@
   <fx:Declarations>
     <!-- Place non-visual elements (e.g., services, value objects) here -->
   </fx:Declarations>
-  <s:Button click="button1_clickHandler(event)" width="{applicationParameters.buttonWidth}" 
-            height="{applicationParameters.buttonHeight}">
-    <s:label>{applicationParameters.buttonLabel}</s:label>
-  </s:Button>
+  <s:Button id="fileSelector" width="{buttonWidth}"
+            height="{buttonHeight}" click="button1_clickHandler(event)" label="{buttonLabel}"/>
+    
+  
 </s:Application>
