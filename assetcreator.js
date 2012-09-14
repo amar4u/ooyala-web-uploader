@@ -5,6 +5,7 @@
   Ooyala.Client.Events.PROGRESS = "progress";
   Ooyala.Client.Events.COMPLETE = "complete";
   Ooyala.Client.Events.ERROR = "error";
+  Ooyala.Client.Events.FILE_SELECTED = "fileSelected";
   Ooyala.Client.Events.ASSET_CREATION_COMPLETE = "assetCreationComplete";
 
   /**
@@ -67,6 +68,7 @@
     this.uploader.on(this.eventNames.PROGRESS, function(){that.progressHandler();});
     this.uploader.on(this.eventNames.COMPLETE, function(){that.uploadCompleteHandler();});
     this.uploader.on(this.eventNames.ERROR, function(){that.errorHandler();});
+    this.uploader.on(this.eventNames.FILE_SELECTED, function(){that.fileSelectedHandler();});
 
     if(this.browseButton){
       this.uploader.assignBrowse(this.browseButton);
@@ -78,6 +80,13 @@
   };
 
   $.extend(Ooyala.Client.AssetCreator.prototype, new Ooyala.Client.EventDispatcher, {
+    /**
+     * Handler for when a file has been selected with the browseButton.
+     */
+    fileSelectedHandler: function() {
+      this.dispatchEvent(this.eventNames.FILE_SELECTED);
+    },
+
     /**
      * Prepare to upload an Ooyala asset.
      *
