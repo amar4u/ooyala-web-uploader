@@ -13,6 +13,7 @@
   $.extend(Ooyala.Client.Uploader.prototype, new Ooyala.Client.EventDispatcher(), {
     setUploadingURLs: function(urls){
       this.uploadingURLs = urls;
+      this.totalChunks = this.uploadingURLs.length;
     },
 
     upload: function(){

@@ -87,7 +87,7 @@
     Ooyala.Client.Uploader.call(this);
     this.chunksUploaded = 0;
     this.chunkProvider = null;
-    this.totalChunks = this.uploadingURLs.length;
+    this.totalChunks = null;
     this.currentChunks = [];
     this.shouldStopBecauseOfError = false;
     this.browseButton = browseButton;
