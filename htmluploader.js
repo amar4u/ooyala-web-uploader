@@ -96,7 +96,7 @@
 
     var defaults = {
       maxChunkRetries: 3,
-      maxNumberOfConcurrnetChunks: 1
+      maxNumberOfConcurrentChunks: 1
     };
 
     this.options = $.extend(defaults, options);
@@ -120,7 +120,7 @@
      * */
     upload: function(){
      this.totalChunks = this.uploadingURLs.length;
-      for(var i = 0; i < this.options.maxNumberOfConcurrnetChunks; i++){
+      for(var i = 0; i < this.options.maxNumberOfConcurrentChunks; i++){
         this.uploadNextChunk();
       }
     },
