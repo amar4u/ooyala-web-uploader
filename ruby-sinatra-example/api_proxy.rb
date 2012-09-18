@@ -1,6 +1,6 @@
 class APIProxy < Sinatra::Base
-API_KEY = "E1MWo6Boqq_S9PrsnZteUoe2X4qK.Zi4rW"
-API_SECRET = "MSm5wS9oDVsnnIoaQAt5FNtvlNCiQ1wMMEOQ2iyA"
+API_KEY = ""
+API_SECRET = ""
 
   get '/' do
     send_file File.join(settings.public_folder, 'index.html')
