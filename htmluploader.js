@@ -45,7 +45,7 @@
       var that = this;
 
       var onComplete = function(){
-        that.chunkProvider.detach("complete");
+        that.chunkProvider.detach("complete", onComplete);
         var bytes = that.chunkProvider.data;
 
         var xhr = new XMLHttpRequest();
@@ -92,6 +92,7 @@
     this.shouldStopBecauseOfError = false;
     this.browseButton = browseButton;
     this.chunkSize = 1*1024*1024;
+    var that = this;
 
     var defaults = {
       maxChunkRetries: 3,
@@ -111,8 +112,6 @@
        that.file = that.chunkProvider.file;
        window.uploader.file = that.chunkProvider.file;
      });
-
-
   };
    
     $.extend(Ooyala.Client.HTMLUploader.prototype, new Ooyala.Client.Uploader, {
