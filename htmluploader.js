@@ -105,7 +105,7 @@
       this.chunkProvider = new Ooyala.Client.HTML5ChunkProvider(this.file, this.browseButton);
     }
     else{
-      this.chunkProvider = new Ooyala.Client.FlashChunkProvider(this.browseButton);
+      throw new Error("Your browser does not support HTML5 file APIs.");
     } 
     
     this.chunkProvider.on("fileSelected", function(){
