@@ -110,7 +110,6 @@
     
     this.chunkProvider.on("fileSelected", function(){
        that.file = that.chunkProvider.file;
-       window.uploader.file = that.chunkProvider.file;
        that.dispatchEvent("fileSelected");
      });
   };
