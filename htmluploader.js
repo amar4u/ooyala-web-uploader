@@ -87,7 +87,7 @@
     Ooyala.Client.Uploader.call(this);
     this.chunksUploaded = 0;
     this.chunkProvider = null;
-    this.totalChunks = this.uploadingURLs.length;
+    this.totalChunks = null;
     this.currentChunks = [];
     this.shouldStopBecauseOfError = false;
     this.browseButton = browseButton;
@@ -96,7 +96,7 @@
 
     var defaults = {
       maxChunkRetries: 3,
-      maxNumberOfConcurrnetChunks: 1
+      maxNumberOfConcurrentChunks: 1
     };
 
     this.options = $.extend(defaults, options);
@@ -110,7 +110,7 @@
     
     this.chunkProvider.on("fileSelected", function(){
        that.file = that.chunkProvider.file;
-       window.uploader.file = that.chunkProvider.file;
+       that.dispatchEvent("fileSelected");
      });
   };
    
@@ -120,7 +120,7 @@
      * */
     upload: function(){
      this.totalChunks = this.uploadingURLs.length;
-      for(var i = 0; i < this.options.maxNumberOfConcurrnetChunks; i++){
+      for(var i = 0; i < this.options.maxNumberOfConcurrentChunks; i++){
         this.uploadNextChunk();
       }
     },

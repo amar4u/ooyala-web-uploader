@@ -7,7 +7,7 @@
    * */
   var initHTMLFileSelector = function(){
     //This function is suppposed to be called using the context of the owner Object, 
-    //which in this case is the Ooyala.Client.HTMLUplaoder.
+    //which in this case is the Ooyala.Client.HTMLUploader.
     var that = this;
     var sel = document.createElement("input");
     sel.type = "file";

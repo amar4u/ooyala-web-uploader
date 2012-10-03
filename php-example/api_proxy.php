@@ -22,8 +22,8 @@ define("OOYALA_API_SECRET", "");
  *   An array of the path components, or FALSE if the path could not be parsed.
  */
 function parsePath($path_info) {
-  $path = explode('/', substr($_SERVER['PATH_INFO'], 1));
-  if ($_SERVER['REQUEST_METHOD'] != 'POST' || $path[0] != 'assets') {
+  $path = explode('/', substr($path_info, 1));
+  if (!in_array($_SERVER['REQUEST_METHOD'], array('POST', 'PUT')) || $path[0] != 'assets') {
     return FALSE;
   }
   return $path;
