@@ -12,13 +12,6 @@
     var sel = document.createElement("input");
     sel.type = "file";
 
-    this.browseButton.style.display = "inline-block";
-    this.browseButton.style.position = "relative";
-    sel.style.position = "absolute";
-    sel.style.top = sel.style.left = sel.style.bottom = sel.style.right = 0;
-    sel.style.opacity = 0;
-    sel.style.cursor = "pointer";
-
     this.browseButton.appendChild(sel);
 
     sel.addEventListener("change", function(e){
