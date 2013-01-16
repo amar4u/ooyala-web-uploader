@@ -9,7 +9,7 @@
    * @private
    * */
   var isFileAPISuppported = function(){
-    return typeof File !== "undefined" && (File.prototype.mozSlice || File.prototype.webkitSlice);
+    return typeof File !== "undefined" && (File.prototype.mozSlice || File.prototype.slice || File.prototype.webkitSlice);
   };
 
 
