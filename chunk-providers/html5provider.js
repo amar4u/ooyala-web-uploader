@@ -35,7 +35,19 @@
         throw new Error("No file has been selected yet.");
       }
       var that = this;
-      var sliceFunctionName = (this.file.mozSlice ? 'mozSlice' : 'slice');
+      var sliceFunctionName;
+      if (this.file.slice) {
+        sliceFunctionName = 'slice';
+      }
+      else if(this.file.mozSlice){
+        sliceFunctionName = 'mozSlice';
+      }
+      else if(this.file.webkitSlice){
+        sliceFunctionName = 'webkitSlice';
+      }
+      else {
+        throw new Error("Uploading is not supported in this browser.");
+      }
 
       this.data = this.file[sliceFunctionName](startByte, endByte);
       this.dispatchEvent("complete");
